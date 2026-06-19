@@ -92,3 +92,29 @@ with st.expander('상세 검색 조건', expanded=True):
             
             edu = st.selectbox('학력을 선택하세요', list(edu_options.keys()))
             edu = edu_options[edu]
+
+
+
+
+crwaling_clicked = st.button('크롤링 시작',
+                             use_container_width=True,
+                             type='primary')
+
+if crwaling_clicked:
+    st.write('버튼을 누름')
+
+else:
+    st.write('버튼을 안누름')
+
+
+# df = 
+
+if crwaling_clicked:
+
+    if not search_text:
+        st.warning('검색어를 입력하세요')
+
+
+    else:
+        with st.spinner(f"{site_select}에서 {search_text}검색 결과 가져오는 중..."):
+            pass
