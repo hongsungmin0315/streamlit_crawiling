@@ -1,4 +1,8 @@
 import streamlit as st
+# import crwaling as cr
+from crwaling import crawling_saramin, crawling_work24, download_to_csv
+import pandas as pd
+# from crwaling import download_to_csv
 
 st.set_page_config(page_title='채용공고 자동 크롤링 서비스',
                        layout='wide')
@@ -57,7 +61,6 @@ with st.expander('상세 검색 조건', expanded=True):
                 "영업": "5"
             }
 
-
             selected_category = st.multiselect('직무를 선택하세요',
                                                list(cat_options.keys()),
                                                default='IT개발·데이터')
@@ -100,6 +103,8 @@ crwaling_clicked = st.button('크롤링 시작',
                              use_container_width=True,
                              type='primary')
 
+
+
 if crwaling_clicked:
     st.write('버튼을 누름')
 
@@ -117,4 +122,42 @@ if crwaling_clicked:
 
     else:
         with st.spinner(f"{site_select}에서 {search_text}검색 결과 가져오는 중..."):
-            pass
+            
+            if site_select == '사람인':
+                  df = crawling_saramin(search_text = search_text,
+                                        except_text = except_text,
+                                        region = locations, 
+                                        category = category,
+                                        career = career,
+                                        education = edu,
+                                        max_pages = max_pages)
+           
+           
+            else:
+                    df = crawling_work24(search_text = search_text,
+                                        except_text = except_text,
+                                        region = region, 
+                                        category = occupation,
+                                        career = career,
+                                        education = edu,
+                                        max_pages = max_pages)
+        st.session_state['df'] = df
+
+
+if not 'df' in st.session_state:
+    st.session_state['df'] = pd.DataFrame()
+
+
+df = st.session_state['df']
+
+if not df.empty:
+    st.subheader('검색결과')
+    st.dataframe(df,
+                 use_container_width=True,
+                 hide_index=True)
+    csv_data = download_to_csv(df)
+    st.download_button(label='csv 결과 다운로드',
+                       data=csv_data,
+                       file_name=f"crawling_results_{site_select}.csv",
+                       mime='text/csv')
+
